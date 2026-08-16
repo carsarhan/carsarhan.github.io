@@ -514,6 +514,31 @@
         </div>
 </footer>
 
+<!-- ===== 下面粘贴我们悬浮动漫助手代码 ===== -->
+<div class="assistant-float">
+    <div class="assistant-bubble" id="talkBubble"></div>
+    <img class="assistant-avatar" src="/intro/avatar.jpg">
+</div>
+
+<script>
+const talkList = [
+    "欢迎来到我的SRE技术小屋✨",
+    "K8s排错优先看事件与日志！",
+    "遇事不决先跑 mtr 排查网络",
+    "生产环境千万不要执行 rm -rf /",
+    "AI诗词脚本可以生成有趣内容哦"
+];
+let idx = 0;
+const bubble = document.getElementById("talkBubble");
+bubble.innerText = talkList[0];
+
+setInterval(()=>{
+    idx = (idx + 1) % talkList.length;
+    bubble.innerText = talkList[idx];
+},8000);
+</script>
+<!-- ===== 粘贴结束 ===== -->
+
         </div>
         <!-- toc -->
             <div class="toc-wrapper toc-wrapper-loding" style=    top:50vh;
