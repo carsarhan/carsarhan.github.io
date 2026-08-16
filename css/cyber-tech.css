@@ -1,0 +1,78 @@
+/* SRE运维博客｜工业冷峻科技风，保留原背景大图 */
+
+/* 主内容区域半透明磨砂，不覆盖首页背景图 */
+.container, .wrapper {
+    background-color: rgba(12,18,28,0.72) !important;
+    border-radius: 10px;
+    border: 1px solid rgba(72,188,222,0.18);
+    box-shadow: 0 4px 24px rgba(0,120,160,0.12);
+}
+
+/* 侧边个人信息卡片 */
+.profile {
+    background: rgba(10,16,26,0.68) !important;
+    border:1px solid rgba(64,172,210,0.2);
+    border-radius:10px;
+}
+
+/* 头像外圈淡光，不要过亮 */
+.profile-avatar {
+    border: 2px solid #34a8c7;
+    box-shadow: 0 0 10px rgba(40,170,200,0.35);
+}
+
+/* 大标题：淡淡的冷青色，取消爆炸发光 */
+.intro-title {
+    color:#b4e6f5 !important;
+    text-shadow: 0 1px 8px rgba(30,170,210,0.45);
+}
+.intro-subtitle {
+    color:#92d4e8 !important;
+}
+
+/* 文章标题、h1‑h4，低饱和青色 */
+h1,h2,h3,h4,.abstract-title-text {
+    color:#72c8e0 !important;
+}
+
+/* 普通正文文本，柔和浅灰蓝，保证可读性 */
+body {
+    color:#d0e4ec !important;
+}
+
+/* 链接 hover微弱高亮 */
+a {
+    color:#52b8d6 !important;
+}
+a:hover {
+    color:#80d8f0 !important;
+}
+
+/* 代码块：深色终端质感，SRE博客重点 */
+pre,code {
+    background:#0e1a28 !important;
+    border:1px solid #286478;
+    color:#76e0f2;
+}
+
+/* 顶部导航栏半透 */
+.header {
+    background:rgba(8,14,22,0.75) !important;
+    border-bottom:1px solid rgba(60,160,190,0.2);
+}
+
+/* 分割线渐变，淡雅 */
+.index-post-divider {
+    background:linear-gradient(90deg,transparent,#2c7892,transparent) !important;
+}
+
+/* 弱化扫描线，透明度压得很低，几乎看不见，只留一点点显示器质感，嫌吵可以直接删除这一段 */
+body::after{
+    content:"";
+    position:fixed;
+    top:0;left:0;right:0;bottom:0;
+    pointer-events:none;
+    background-image: repeating-linear-gradient(0deg,rgba(0,0,0,0.03) 0px,rgba(0,0,0,0.03) 1px,transparent 1px,transparent 4px);
+    z-index:9998;
+    opacity:0.08;
+}
