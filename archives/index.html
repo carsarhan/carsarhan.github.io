@@ -400,6 +400,40 @@
                 <main class="main index-page">
             
         <article class="index-post">
+            <a class="abstract-title" href="/2026/08/17/docker-container-access-host-port-troubleshooting/">
+                <span class="abstract-title-text">Docker容器无法访问宿主机映射端口排查：K8s遗留网络规则的坑</span>
+            </a>
+            <div class="abstract-content">
+                问题现象宿主机上通过 Docker Compose 部署了一组服务，nginx 容器映射了 80 端口。从宿主机本地 curl 完全正常，但从同一台机器上的其他容器内访问宿主机 IP:80 却不通：
+
+宿主机 curl 192.168.16.81:80 ✅
+容器内 ping 192.168.16.81 ✅
+容器内 curl 192.168.16.81:80 ❌（即时失败）
+容器内访问宿主机其他端口（如 python http.server 的 8000）✅
+
+关键发现：80 端口是 docker-proxy12ss -tlnp | grep :80# LISTEN  users:((&q...
+            </div>
+            <!-- read more -->
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2026/08/17">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2026/08/17</span>
+                </div>
+                <!-- tags -->
+                    <div class="abstract-tags" >
+        <a class="post-tag" href="javascript:void(0);" data-tags="Docker">Docker</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags="iptables">iptables</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags="K8s">K8s</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags="网络">网络</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags="Calico">Calico</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags="br_netfilter">br_netfilter</a>
+</div>
+
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+            
+        <article class="index-post">
             <a class="abstract-title" href="/2026/08/16/DevOps/">
                 <span class="abstract-title-text">DevOps</span>
             </a>
@@ -495,9 +529,10 @@ setInterval(()=>{
         <div class="sidebar-panel-archives">
     <!-- 在 ejs 中将 archive 按照时间排序 -->
         
+        
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 1
+        Total : 2
         </div>
         <!-- search  -->
     </div>
@@ -507,6 +542,13 @@ setInterval(()=>{
         <li class="archive-post-item">
             <span class="archive-post-date">Invalid date</span>
             <a class="archive-post-title" href="/2026/08/16/DevOps/">DevOps</a>
+        </li>
+                </ul>
+            <div class="archive-year"> 2026 </div>
+            <ul class="year-list">
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/18</span>
+            <a class="archive-post-title" href="/2026/08/17/docker-container-access-host-port-troubleshooting/">Docker容器无法访问宿主机映射端口排查：K8s遗留网络规则的坑</a>
         </li>
             </ul>
     </div>
@@ -522,6 +564,30 @@ setInterval(()=>{
                 <span class="iconfont-archer">&#xe606;</span>
                 运维
             </span>
+            <span class="sidebar-tag-name" data-tags="Docker">
+                <span class="iconfont-archer">&#xe606;</span>
+                Docker
+            </span>
+            <span class="sidebar-tag-name" data-tags="iptables">
+                <span class="iconfont-archer">&#xe606;</span>
+                iptables
+            </span>
+            <span class="sidebar-tag-name" data-tags="K8s">
+                <span class="iconfont-archer">&#xe606;</span>
+                K8s
+            </span>
+            <span class="sidebar-tag-name" data-tags="网络">
+                <span class="iconfont-archer">&#xe606;</span>
+                网络
+            </span>
+            <span class="sidebar-tag-name" data-tags="Calico">
+                <span class="iconfont-archer">&#xe606;</span>
+                Calico
+            </span>
+            <span class="sidebar-tag-name" data-tags="br_netfilter">
+                <span class="iconfont-archer">&#xe606;</span>
+                br_netfilter
+            </span>
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
     <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
@@ -535,6 +601,10 @@ setInterval(()=>{
         <span class="sidebar-category-name" data-categories="技术笔记">
             <span class="iconfont-archer">&#xe60a;</span>
             技术笔记
+        </span>
+        <span class="sidebar-category-name" data-categories="运维排障">
+            <span class="iconfont-archer">&#xe60a;</span>
+            运维排障
         </span>
     </div>
     <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
