@@ -497,25 +497,30 @@ setInterval(()=>{
     <!-- 在 ejs 中将 archive 按照时间排序 -->
         
         
+        
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 2
+        Total : 3
         </div>
         <!-- search  -->
     </div>
     <div class="post-archive">
+            <div class="archive-year"> 2026 </div>
+            <ul class="year-list">
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/18</span>
+            <a class="archive-post-title" href="/2026/08/18/coredns-search-troubleshoot/">Kubernetes CoreDNS 排查：search 域导致 FQDN 解析失败</a>
+        </li>
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/18</span>
+            <a class="archive-post-title" href="/2026/08/17/docker-container-access-host-port-troubleshooting/">Docker容器无法访问宿主机映射端口排查：K8s遗留网络规则的坑</a>
+        </li>
+                </ul>
             <div class="archive-year"> Invalid date </div>
             <ul class="year-list">
         <li class="archive-post-item">
             <span class="archive-post-date">Invalid date</span>
             <a class="archive-post-title" href="/2026/08/16/DevOps/">DevOps</a>
-        </li>
-                </ul>
-            <div class="archive-year"> 2026 </div>
-            <ul class="year-list">
-        <li class="archive-post-item">
-            <span class="archive-post-date">08/18</span>
-            <a class="archive-post-title" href="/2026/08/17/docker-container-access-host-port-troubleshooting/">Docker容器无法访问宿主机映射端口排查：K8s遗留网络规则的坑</a>
         </li>
             </ul>
     </div>
@@ -523,13 +528,21 @@ setInterval(()=>{
 
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
-            <span class="sidebar-tag-name" data-tags="DevOps">
+            <span class="sidebar-tag-name" data-tags="CoreDNS">
                 <span class="iconfont-archer">&#xe606;</span>
-                DevOps
+                CoreDNS
             </span>
-            <span class="sidebar-tag-name" data-tags="运维">
+            <span class="sidebar-tag-name" data-tags="DNS">
                 <span class="iconfont-archer">&#xe606;</span>
-                运维
+                DNS
+            </span>
+            <span class="sidebar-tag-name" data-tags="故障排查">
+                <span class="iconfont-archer">&#xe606;</span>
+                故障排查
+            </span>
+            <span class="sidebar-tag-name" data-tags="Kubernetes">
+                <span class="iconfont-archer">&#xe606;</span>
+                Kubernetes
             </span>
             <span class="sidebar-tag-name" data-tags="Docker">
                 <span class="iconfont-archer">&#xe606;</span>
@@ -555,6 +568,14 @@ setInterval(()=>{
                 <span class="iconfont-archer">&#xe606;</span>
                 br_netfilter
             </span>
+            <span class="sidebar-tag-name" data-tags="DevOps">
+                <span class="iconfont-archer">&#xe606;</span>
+                DevOps
+            </span>
+            <span class="sidebar-tag-name" data-tags="运维">
+                <span class="iconfont-archer">&#xe606;</span>
+                运维
+            </span>
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
     <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
@@ -565,13 +586,17 @@ setInterval(()=>{
 
         <div class="sidebar-panel-categories">
     <div class="sidebar-categories-name">
-        <span class="sidebar-category-name" data-categories="技术笔记">
+        <span class="sidebar-category-name" data-categories="Kubernetes">
             <span class="iconfont-archer">&#xe60a;</span>
-            技术笔记
+            Kubernetes
         </span>
         <span class="sidebar-category-name" data-categories="运维排障">
             <span class="iconfont-archer">&#xe60a;</span>
             运维排障
+        </span>
+        <span class="sidebar-category-name" data-categories="技术笔记">
+            <span class="iconfont-archer">&#xe60a;</span>
+            技术笔记
         </span>
     </div>
     <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>

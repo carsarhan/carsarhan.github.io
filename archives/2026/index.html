@@ -400,6 +400,35 @@
                 <main class="main index-page">
             
         <article class="index-post">
+            <a class="abstract-title" href="/2026/08/18/coredns-search-troubleshoot/">
+                <span class="abstract-title-text">Kubernetes CoreDNS 排查：search 域导致 FQDN 解析失败</span>
+            </a>
+            <div class="abstract-content">
+                问题现象Nginx 容器启动时报错退出：
+1[emerg] host not found in upstream &quot;ev-edge.default.svc.cluster.local&quot; in /etc/nginx/conf.d/default.conf:64
+
+但在同集群的 netshoot 调试容器中，nslookup ev-edge 短名解析正常，Service 确实存在且有 Endpoints。
+排查过程第一步：确认 Service 是否存在123kubectl get svc ev-edge# NAME      TYPE        CLUSTER-IP ...
+            </div>
+            <!-- read more -->
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2026/08/18">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2026/08/18</span>
+                </div>
+                <!-- tags -->
+                    <div class="abstract-tags" >
+        <a class="post-tag" href="javascript:void(0);" data-tags="CoreDNS">CoreDNS</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags="DNS">DNS</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags="故障排查">故障排查</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags="Kubernetes">Kubernetes</a>
+</div>
+
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+            
+        <article class="index-post">
             <a class="abstract-title" href="/2026/08/17/docker-container-access-host-port-troubleshooting/">
                 <span class="abstract-title-text">Docker容器无法访问宿主机映射端口排查：K8s遗留网络规则的坑</span>
             </a>
@@ -530,25 +559,30 @@ setInterval(()=>{
     <!-- 在 ejs 中将 archive 按照时间排序 -->
         
         
+        
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 2
+        Total : 3
         </div>
         <!-- search  -->
     </div>
     <div class="post-archive">
+            <div class="archive-year"> 2026 </div>
+            <ul class="year-list">
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/18</span>
+            <a class="archive-post-title" href="/2026/08/18/coredns-search-troubleshoot/">Kubernetes CoreDNS 排查：search 域导致 FQDN 解析失败</a>
+        </li>
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/18</span>
+            <a class="archive-post-title" href="/2026/08/17/docker-container-access-host-port-troubleshooting/">Docker容器无法访问宿主机映射端口排查：K8s遗留网络规则的坑</a>
+        </li>
+                </ul>
             <div class="archive-year"> Invalid date </div>
             <ul class="year-list">
         <li class="archive-post-item">
             <span class="archive-post-date">Invalid date</span>
             <a class="archive-post-title" href="/2026/08/16/DevOps/">DevOps</a>
-        </li>
-                </ul>
-            <div class="archive-year"> 2026 </div>
-            <ul class="year-list">
-        <li class="archive-post-item">
-            <span class="archive-post-date">08/18</span>
-            <a class="archive-post-title" href="/2026/08/17/docker-container-access-host-port-troubleshooting/">Docker容器无法访问宿主机映射端口排查：K8s遗留网络规则的坑</a>
         </li>
             </ul>
     </div>
@@ -556,13 +590,21 @@ setInterval(()=>{
 
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
-            <span class="sidebar-tag-name" data-tags="DevOps">
+            <span class="sidebar-tag-name" data-tags="CoreDNS">
                 <span class="iconfont-archer">&#xe606;</span>
-                DevOps
+                CoreDNS
             </span>
-            <span class="sidebar-tag-name" data-tags="运维">
+            <span class="sidebar-tag-name" data-tags="DNS">
                 <span class="iconfont-archer">&#xe606;</span>
-                运维
+                DNS
+            </span>
+            <span class="sidebar-tag-name" data-tags="故障排查">
+                <span class="iconfont-archer">&#xe606;</span>
+                故障排查
+            </span>
+            <span class="sidebar-tag-name" data-tags="Kubernetes">
+                <span class="iconfont-archer">&#xe606;</span>
+                Kubernetes
             </span>
             <span class="sidebar-tag-name" data-tags="Docker">
                 <span class="iconfont-archer">&#xe606;</span>
@@ -588,6 +630,14 @@ setInterval(()=>{
                 <span class="iconfont-archer">&#xe606;</span>
                 br_netfilter
             </span>
+            <span class="sidebar-tag-name" data-tags="DevOps">
+                <span class="iconfont-archer">&#xe606;</span>
+                DevOps
+            </span>
+            <span class="sidebar-tag-name" data-tags="运维">
+                <span class="iconfont-archer">&#xe606;</span>
+                运维
+            </span>
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
     <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
@@ -598,13 +648,17 @@ setInterval(()=>{
 
         <div class="sidebar-panel-categories">
     <div class="sidebar-categories-name">
-        <span class="sidebar-category-name" data-categories="技术笔记">
+        <span class="sidebar-category-name" data-categories="Kubernetes">
             <span class="iconfont-archer">&#xe60a;</span>
-            技术笔记
+            Kubernetes
         </span>
         <span class="sidebar-category-name" data-categories="运维排障">
             <span class="iconfont-archer">&#xe60a;</span>
             运维排障
+        </span>
+        <span class="sidebar-category-name" data-categories="技术笔记">
+            <span class="iconfont-archer">&#xe60a;</span>
+            技术笔记
         </span>
     </div>
     <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>

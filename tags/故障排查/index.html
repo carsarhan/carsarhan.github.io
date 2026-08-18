@@ -12,7 +12,7 @@
     <meta name="description" content="">
     <meta property="og:type" content="website">
 <meta property="og:title" content="SRE运维笔记">
-<meta property="og:url" content="https://carsarhan.github.io/archives/2026/08/index.html">
+<meta property="og:url" content="https://carsarhan.github.io/tags/%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/index.html">
 <meta property="og:site_name" content="SRE运维笔记">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:author" content="韩不言">
@@ -422,73 +422,6 @@
         <a class="post-tag" href="javascript:void(0);" data-tags="DNS">DNS</a>
         <a class="post-tag" href="javascript:void(0);" data-tags="故障排查">故障排查</a>
         <a class="post-tag" href="javascript:void(0);" data-tags="Kubernetes">Kubernetes</a>
-</div>
-
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-            
-        <article class="index-post">
-            <a class="abstract-title" href="/2026/08/17/docker-container-access-host-port-troubleshooting/">
-                <span class="abstract-title-text">Docker容器无法访问宿主机映射端口排查：K8s遗留网络规则的坑</span>
-            </a>
-            <div class="abstract-content">
-                问题现象宿主机上通过 Docker Compose 部署了一组服务，nginx 容器映射了 80 端口。从宿主机本地 curl 完全正常，但从同一台机器上的其他容器内访问宿主机 IP:80 却不通：
-
-宿主机 curl 192.168.16.81:80 ✅
-容器内 ping 192.168.16.81 ✅
-容器内 curl 192.168.16.81:80 ❌（即时失败）
-容器内访问宿主机其他端口（如 python http.server 的 8000）✅
-
-关键发现：80 端口是 docker-proxy12ss -tlnp | grep :80# LISTEN  users:((&q...
-            </div>
-            <!-- read more -->
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2026/08/17">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2026/08/17</span>
-                </div>
-                <!-- tags -->
-                    <div class="abstract-tags" >
-        <a class="post-tag" href="javascript:void(0);" data-tags="Docker">Docker</a>
-        <a class="post-tag" href="javascript:void(0);" data-tags="iptables">iptables</a>
-        <a class="post-tag" href="javascript:void(0);" data-tags="K8s">K8s</a>
-        <a class="post-tag" href="javascript:void(0);" data-tags="网络">网络</a>
-        <a class="post-tag" href="javascript:void(0);" data-tags="Calico">Calico</a>
-        <a class="post-tag" href="javascript:void(0);" data-tags="br_netfilter">br_netfilter</a>
-</div>
-
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-            
-        <article class="index-post">
-            <a class="abstract-title" href="/2026/08/16/DevOps/">
-                <span class="abstract-title-text">DevOps</span>
-            </a>
-            <div class="abstract-content">
-                DevOps一、DevOps介绍软件开发最开始是由两个团队组成：
-
-开发计划由开发团队从头开始设计和整体系统的构建。需要系统不停的迭代更新。
-运维团队将开发团队的Code进行测试后部署上线。希望系统稳定安全运行。
-
-这看似两个目标不同的团队需要协同完成一个软件的开发。
-在开发团队指定好计划并完成coding后，需要提供到运维团队。
-运维团队向开发团队反馈需要修复的BUG以及一些需要返工的任务。
-这时开发团队需要经常等待运维团队的反馈。这无疑延长了事件并推迟了整个软件开发的周期。
-会有一种方式，在开发团队等待的时候，让开发团队转移到下一个项目中。等待运维团队为之前的代码提供反馈。
-可是这样...
-            </div>
-            <!-- read more -->
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2026/08/16">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2026/08/16</span>
-                </div>
-                <!-- tags -->
-                    <div class="abstract-tags" >
-        <a class="post-tag" href="javascript:void(0);" data-tags="DevOps">DevOps</a>
-        <a class="post-tag" href="javascript:void(0);" data-tags="运维">运维</a>
 </div>
 
             </div>
