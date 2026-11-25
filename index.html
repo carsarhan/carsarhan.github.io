@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>知栈 · 个人知识库</title>
+  <title>麒麟 · 个人知识库</title>
   <meta name="description" content="记录 · 整理 · 沉淀，让每一份技术积累都可被检索。">
-  <meta name="keywords" content="知识库,技术博客,Kubernetes,DevOps,Linux,网络,数据库">
-  <meta name="author" content="知栈君">
+  <meta name="keywords" content="知识库,个人作品,技术博客,Kubernetes,DevOps,Linux,网络,数据库">
+  <meta name="author" content="麒麟君">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="知栈 · 个人知识库">
+  <meta property="og:title" content="麒麟 · 个人知识库">
   <meta property="og:description" content="记录 · 整理 · 沉淀，让每一份技术积累都可被检索。">
   <meta name="theme-color" content="#4f6ef7">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%234f6ef7'/%3E%3Ctext x='32' y='44' font-size='36' font-family='sans-serif' font-weight='bold' text-anchor='middle' fill='white'%3E知%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%234f6ef7'/%3E%3Ctext x='32' y='44' font-size='36' font-family='sans-serif' font-weight='bold' text-anchor='middle' fill='white'%3E%E9%BA%92%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -26,14 +26,16 @@
           <svg viewBox="0 0 32 32" fill="none"><path d="M7 8.5 16 4l9 4.5v15L16 28l-9-4.5v-15Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M7 8.5 16 13l9-4.5M16 13v15" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
         </span>
         <span class="brand-text">
-          <strong>知栈</strong>
-          <small>KNOWLEDGE STACK</small>
+          <strong>麒麟</strong>
+          <small>QILIN</small>
         </span>
       </a>
 
       <nav class="nav" id="nav" aria-label="主导航">
         <a href="#/" data-route="/">首页</a>
         <a href="#/knowledge" data-route="/knowledge">知识库</a>
+        <a href="#/journal" data-route="/journal">日记</a>
+        <a href="#/works" data-route="/works">作品</a>
         <a href="#/archives" data-route="/archives">归档</a>
         <a href="#/tags" data-route="/tags">标签</a>
         <a href="#/about" data-route="/about">关于</a>
@@ -65,7 +67,7 @@
     <div class="footer-inner">
       <div class="footer-top">
         <div class="footer-brand">
-          <div class="footer-logo">知栈 <span>Knowledge Stack</span></div>
+          <div class="footer-logo">麒麟 <span>Qilin</span></div>
           <p>把踩过的坑写成路标，让知识可以被复用。</p>
           <div class="footer-socials" id="footerSocials"></div>
         </div>
@@ -74,6 +76,8 @@
             <h4>导航</h4>
             <a href="#/">首页</a>
             <a href="#/knowledge">知识库</a>
+            <a href="#/journal">日记</a>
+            <a href="#/works">个人作品</a>
             <a href="#/archives">归档</a>
             <a href="#/tags">标签</a>
           </div>
@@ -92,7 +96,12 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© <span id="year"></span> 知栈 · 由 GitHub Pages 强力驱动</span>
+        <span>© <span id="year"></span> 麒麟 · 由 GitHub Pages 强力驱动</span>
+        <div class="visit-stats" title="访问统计由 Abacus 提供，离线时使用本机记录">
+          <span class="visit-item"><i>📅</i> 今日访问 <b class="visit-count" data-visit="today">—</b></span>
+          <span class="visit-sep"></span>
+          <span class="visit-item"><i>📈</i> 历史访问 <b class="visit-count" data-visit="total">—</b></span>
+        </div>
         <span>Made with care &amp; curiosity</span>
       </div>
     </div>

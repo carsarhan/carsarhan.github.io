@@ -1,5 +1,5 @@
 /* ============================================================
-   知栈 · 个人知识库  应用逻辑
+   麒麟 · 个人知识库  应用逻辑
    ============================================================ */
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -23,6 +23,13 @@ const ICONS = {
   database: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg>',
   code: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 4l-4 16"/></svg>',
   fire: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 22c4 0 7-3 7-7 0-4-3-6-4-9-1 2-2 3-3 3 0-3-1-5-3-7 0 4-4 6-4 13 0 4 3 7 7 7Z"/></svg>',
+  journal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4a2 2 0 0 1 2-2h13v18H6a2 2 0 0 0-2 2V4Z"/><path d="M8 4v16M11 8h5M11 12h5"/></svg>',
+  feather: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4c-6 0-11 3-13 9l-3 7 7-3c6-2 9-7 9-13Z"/><path d="m4 20 6-6"/></svg>',
+  heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20.8 5.6a5.5 5.5 0 0 0-7.8 0L12 6.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 22l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>',
+  globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>',
+  wrench: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6.5a4 4 0 0 0-5 5L4 17l3 3 5.5-5.5a4 4 0 0 0 5-5l-3 3-3-3 3-3Z"/></svg>',
+  palette: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a9 9 0 0 0 0 18h1.5a2 2 0 0 0 1.6-3.2 1.8 1.8 0 0 1 1.5-2.8H19a2 2 0 0 0 2-2A9 9 0 0 0 12 3Z"/><circle cx="7.5" cy="11.5" r="1" fill="currentColor"/><circle cx="10" cy="7.5" r="1" fill="currentColor"/><circle cx="15" cy="7.5" r="1" fill="currentColor"/></svg>',
+  external: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
 };
 
 const icon = (name) => ICONS[name] || '';
@@ -33,7 +40,13 @@ const getCat = (id) => CATEGORIES.find((c) => c.id === id) || CATEGORIES[0];
 const formatDate = (d) => d.replace(/-/g, '/');
 const fmtNum = (n) => n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
 const sortedArticles = () => [...ARTICLES].sort((a, b) => b.date.localeCompare(a.date));
+const sortedDiaries = () => [...DIARIES].sort((a, b) => b.date.localeCompare(a.date));
 const stripHtml = (html) => html.replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/g, ' ').replace(/\s+/g, ' ').trim();
+const diaryKind = (kind) => kind === 'knowledge'
+  ? { name: '知识随笔', icon: 'feather', color: '#4f6ef7' }
+  : { name: '日常记录', icon: 'heart', color: '#ec4899' };
+const getWorkType = (id) => WORK_TYPES.find((t) => t.id === id) || WORK_TYPES[0];
+const sortedWorks = () => [...WORKS].sort((a, b) => b.year.localeCompare(a.year));
 
 function catPill(cat) {
   const c = getCat(cat);
@@ -56,6 +69,39 @@ function articleCard(a, index = 0) {
     '<p class="ac-excerpt">' + escapeHtml(a.excerpt) + '</p>' +
     '<div class="ac-footer">' + tagHtml(a.tags) +
     '<div class="ac-stats"><span>' + icon('clock') + ' ' + a.readTime + ' 分钟</span><span>' + icon('eye') + ' ' + fmtNum(a.views) + '</span></div>' +
+    '</div></article>';
+}
+
+function diaryCard(d, index = 0) {
+  const k = diaryKind(d.kind);
+  return '<article class="diary-card" style="animation-delay:' + Math.min(index * 60, 300) + 'ms">' +
+    '<div class="diary-date"><b>' + d.date.slice(8) + '</b><small>' + d.date.slice(0, 7).replace('-', ' / ') + '</small></div>' +
+    '<div class="diary-content">' +
+      '<div class="diary-meta">' +
+        '<span class="diary-kind" style="--kc:' + k.color + '">' + icon(k.icon) + ' ' + k.name + '</span>' +
+        '<span title="心情">' + d.mood.icon + ' ' + d.mood.label + '</span>' +
+        '<span title="天气">' + d.weather.icon + ' ' + d.weather.label + '</span>' +
+      '</div>' +
+      '<h3><a href="#/journal/' + d.id + '">' + escapeHtml(d.title) + '</a></h3>' +
+      '<p class="diary-excerpt">' + escapeHtml(d.excerpt) + '</p>' +
+      '<div class="ac-footer">' + tagHtml(d.tags) +
+        '<div class="ac-stats"><span>' + icon('clock') + ' ' + d.readTime + ' 分钟</span><span>' + icon('eye') + ' ' + fmtNum(d.views) + '</span></div>' +
+      '</div>' +
+    '</div></article>';
+}
+
+function workCard(w, index = 0) {
+  const t = getWorkType(w.type);
+  return '<article class="work-card" style="animation-delay:' + Math.min(index * 60, 300) + 'ms">' +
+    '<a class="work-cover" style="background:' + w.gradient + '" href="#/works/' + w.id + '">' +
+      '<span class="work-cover-icon">' + w.icon + '</span>' +
+      '<span class="work-cover-type">' + icon(t.icon) + ' ' + t.name + '</span>' +
+    '</a>' +
+    '<div class="work-body">' +
+      '<div class="work-meta"><span class="work-status">' + escapeHtml(w.status) + '</span><span>' + w.year + '</span></div>' +
+      '<h3><a href="#/works/' + w.id + '">' + escapeHtml(w.title) + '</a></h3>' +
+      '<p>' + escapeHtml(w.summary) + '</p>' +
+      '<div class="work-tags">' + w.tags.slice(0, 4).map((tag) => '<span>' + escapeHtml(tag) + '</span>').join('') + '</div>' +
     '</div></article>';
 }
 
@@ -105,6 +151,29 @@ function sidebarHtml() {
         '<a href="#/article/' + a.id + '"><time>' + a.date.slice(5).replace('-', '/') + '</time><span>' + escapeHtml(a.title) + '</span></a>'
       ).join('') + '</div>' +
     '</div>' +
+
+    '<div class="widget">' +
+      '<h3 class="widget-title">最近日记 <span>Diary</span></h3>' +
+      '<div class="mini-archive">' + sortedDiaries().slice(0, 4).map((d) =>
+        '<a href="#/journal/' + d.id + '"><time>' + d.date.slice(5).replace('-', '/') + '</time><span>' + d.mood.icon + ' ' + escapeHtml(d.title) + '</span></a>'
+      ).join('') + '</div>' +
+    '</div>' +
+
+    '<div class="widget">' +
+      '<h3 class="widget-title">个人作品 <span>Works</span></h3>' +
+      '<div class="mini-archive">' + sortedWorks().slice(0, 4).map((w) =>
+        '<a href="#/works/' + w.id + '"><time>' + w.year + '</time><span>' + w.icon + ' ' + escapeHtml(w.title) + '</span></a>'
+      ).join('') + '</div>' +
+    '</div>' +
+
+    '<div class="widget visit-widget">' +
+      '<h3 class="widget-title">站点数据 <span>Live</span></h3>' +
+      '<div class="visit-widget-grid">' +
+        '<div><b class="visit-count" data-visit="today">—</b><small>今日访问</small></div>' +
+        '<div><b class="visit-count" data-visit="total">—</b><small>历史访问</small></div>' +
+      '</div>' +
+      '<p class="visit-widget-note">数据由 Abacus 提供，离线时显示本机记录</p>' +
+    '</div>' +
   '</aside>';
 }
 
@@ -118,7 +187,7 @@ function renderHome() {
       '<div class="hero-orb a"></div><div class="hero-orb b"></div><div class="hero-orb c"></div>' +
       '<div class="hero-inner">' +
         '<div>' +
-          '<div class="hero-badge"><span class="dot"></span> 持续更新中 · 已沉淀 ' + ARTICLES.length + ' 篇笔记</div>' +
+          '<div class="hero-badge"><span class="dot"></span> 持续更新中 · ' + ARTICLES.length + ' 篇笔记 · ' + DIARIES.length + ' 篇日记 · ' + WORKS.length + ' 个作品</div>' +
           '<h1 class="hero-title">沉淀知识<br><span class="gradient">连接思考</span></h1>' +
           '<p class="hero-slogan">' + escapeHtml(SITE.slogan) + '</p>' +
           '<p class="hero-desc">' + escapeHtml(SITE.description) + ' 涵盖 Kubernetes、DevOps、Linux、网络与数据库等方向。</p>' +
@@ -130,11 +199,13 @@ function renderHome() {
             '<div class="hero-stat"><strong>' + ARTICLES.length + '</strong><span>技术笔记</span></div>' +
             '<div class="hero-stat"><strong>' + CATEGORIES.length + '</strong><span>知识分类</span></div>' +
             '<div class="hero-stat"><strong>' + totalTags + '</strong><span>标签索引</span></div>' +
+            '<div class="hero-stat"><strong>' + DIARIES.length + '</strong><span>生活日记</span></div>' +
+            '<div class="hero-stat"><strong>' + WORKS.length + '</strong><span>个人作品</span></div>' +
           '</div>' +
         '</div>' +
         '<div class="hero-visual">' +
           '<div class="visual-card main">' +
-            '<div class="vc-head"><i></i><i></i><i></i><span>knowledge-stack.yml</span></div>' +
+            '<div class="vc-head"><i></i><i></i><i></i><span>qilin.yml</span></div>' +
             '<code><span class="c"># 让知识可检索</span>\n<span class="k">site</span>:\n  name: <span class="s">"' + SITE.name + '"</span>\n  motto: <span class="s">"沉淀 · 连接 · 复用"</span>\n\n<span class="k">categories</span>:\n  - Kubernetes\n  - DevOps\n  - Linux &amp; Network</code>' +
           '</div>' +
           '<div class="visual-card small1">' +
@@ -155,6 +226,12 @@ function renderHome() {
           '<div class="section-head"><h2 class="section-title">最新文章</h2><a class="section-more" href="#/archives">查看全部 ' + icon('arrow') + '</a></div>' +
           '<div class="article-list">' + featured.map(articleCard).join('') + '</div>' +
           '<div style="text-align:center;margin-top:32px"><a class="btn btn-ghost" href="#/knowledge">浏览全部 ' + ARTICLES.length + ' 篇笔记 ' + icon('arrow') + '</a></div>' +
+
+          '<div class="section-head" style="margin-top:56px"><h2 class="section-title">最近日记</h2><a class="section-more" href="#/journal">全部日记 ' + icon('arrow') + '</a></div>' +
+          '<div class="diary-list">' + sortedDiaries().slice(0, 3).map(diaryCard).join('') + '</div>' +
+
+          '<div class="section-head" style="margin-top:56px"><h2 class="section-title">精选作品</h2><a class="section-more" href="#/works">全部作品 ' + icon('arrow') + '</a></div>' +
+          '<div class="work-grid">' + sortedWorks().slice(0, 3).map(workCard).join('') + '</div>' +
         '</div>' +
         sidebarHtml() +
       '</div>' +
@@ -193,8 +270,162 @@ function renderKnowledge(query) {
   '</div>';
 }
 
+function renderJournal(query) {
+  const active = query.get('kind') || 'all';
+  const all = sortedDiaries();
+  const knowledgeCount = all.filter((d) => d.kind === 'knowledge').length;
+  const lifeCount = all.filter((d) => d.kind === 'life').length;
+  const filtered = active === 'all' ? all : all.filter((d) => d.kind === active);
+
+  const filters = '<div class="filter-bar"><span class="filter-label">筛选：</span>' +
+    '<button class="filter-chip' + (active === 'all' ? ' active' : '') + '" data-dkind="all">全部 (' + all.length + ')</button>' +
+    '<button class="filter-chip' + (active === 'knowledge' ? ' active' : '') + '" data-dkind="knowledge">知识随笔 (' + knowledgeCount + ')</button>' +
+    '<button class="filter-chip' + (active === 'life' ? ' active' : '') + '" data-dkind="life">日常记录 (' + lifeCount + ')</button>' +
+  '</div>';
+
+  return '<div class="page container layout-single">' +
+    '<div class="page-head"><span class="page-eyebrow">Journal</span>' +
+      '<h1 class="page-title">个人日记</h1>' +
+      '<p class="page-desc">既写知识，也记生活。这里放一些不成体系但值得留下的文字。</p></div>' +
+    '<div class="journal-banner">' +
+      '<div class="journal-banner-icon">' + icon('journal') + '</div>' +
+      '<div><b>随手记，慢慢活</b><span>知识随笔记录思考的碎片，日常记录收藏生活的温度。</span></div>' +
+      '<div class="journal-banner-count"><strong>' + all.length + '</strong><span>篇日记</span></div>' +
+    '</div>' +
+    filters +
+    '<div class="section-head"><h2 class="section-title">' +
+      (active === 'all' ? '全部日记' : diaryKind(active).name) +
+      ' <span style="font-size:13px;font-weight:400;color:var(--text-3)">共 ' + filtered.length + ' 篇</span></h2></div>' +
+    '<div class="diary-list">' + (filtered.length ? filtered.map(diaryCard).join('') : emptyHtml('还没有这类日记')) + '</div>' +
+  '</div>';
+}
+
+function renderDiary(id) {
+  const d = DIARIES.find((x) => x.id === id);
+  if (!d) return notFound();
+  const all = sortedDiaries();
+  const idx = all.findIndex((x) => x.id === id);
+  const prev = idx > 0 ? all[idx - 1] : null;
+  const next = idx < all.length - 1 ? all[idx + 1] : null;
+  const k = diaryKind(d.kind);
+  const body = d.content.replace(/(<pre><code>)([\s\S]*?)(<\/code><\/pre>)/g, (m, open, code, close) => open + highlightCode(code) + close);
+  const tocItems = (d.content.match(/<h2 id="[^"]+">[^<]+<\/h2>/g) || []).map((h) => {
+    const hid = h.match(/id="([^"]+)"/)[1];
+    const text = h.match(/>([^<]+)<\/h2>/)[1];
+    return '<a href="#' + hid + '" data-toc="' + hid + '">' + escapeHtml(text) + '</a>';
+  }).join('');
+
+  return '<div class="page container">' +
+    '<div class="article-layout"><div>' +
+      '<div class="article-header diary-header">' +
+        '<a class="section-more" href="#/journal" style="font-size:12px">← 返回日记</a>' +
+        '<h1>' + escapeHtml(d.title) + '</h1>' +
+        '<div class="diary-header-meta">' +
+          '<span class="diary-kind large" style="--kc:' + k.color + '">' + icon(k.icon) + ' ' + k.name + '</span>' +
+          '<span class="diary-weather">' + d.mood.icon + ' ' + d.mood.label + ' · ' + d.weather.icon + ' ' + d.weather.label + '</span>' +
+          '<span>' + icon('calendar') + ' ' + formatDate(d.date) + '</span>' +
+          '<span>' + icon('clock') + ' ' + d.readTime + ' 分钟</span>' +
+        '</div>' + tagHtml(d.tags) +
+      '</div>' +
+      '<article class="article-body diary-body">' + body + '</article>' +
+      '<div class="article-tags">' + tagHtml(d.tags) + '</div>' +
+      '<div class="post-nav">' +
+        (prev ? '<a href="#/journal/' + prev.id + '"><small>← 更早</small><b>' + escapeHtml(prev.title) + '</b></a>' : '<div></div>') +
+        (next ? '<a class="next" href="#/journal/' + next.id + '"><small>更新 →</small><b>' + escapeHtml(next.title) + '</b></a>' : '<div></div>') +
+      '</div>' +
+    '</div>' +
+    (tocItems ? '<aside class="toc"><div class="toc-title">本文目录</div><nav class="toc-list">' + tocItems + '</nav></aside>' : '<aside class="toc"></aside>') +
+    '</div></div>';
+}
+
+function renderWorks(query) {
+  const active = query.get('type') || 'all';
+  const all = sortedWorks();
+  const filtered = active === 'all' ? all : all.filter((w) => w.type === active);
+
+  const filters = '<div class="filter-bar"><span class="filter-label">筛选：</span>' +
+    '<button class="filter-chip' + (active === 'all' ? ' active' : '') + '" data-wtype="all">全部 (' + all.length + ')</button>' +
+    WORK_TYPES.map((t) => {
+      const count = all.filter((w) => w.type === t.id).length;
+      return '<button class="filter-chip' + (active === t.id ? ' active' : '') + '" data-wtype="' + t.id + '">' + t.name + ' (' + count + ')</button>';
+    }).join('') +
+  '</div>';
+
+  return '<div class="page container layout-single">' +
+    '<div class="page-head"><span class="page-eyebrow">Selected Works</span>' +
+      '<h1 class="page-title">个人作品</h1>' +
+      '<p class="page-desc">做过的东西，无论大小，都值得留个记录。这里是我的项目展示柜。</p></div>' +
+    '<div class="works-intro">' +
+      '<div class="works-intro-icon">' + icon('globe') + '</div>' +
+      '<div><b>从想法到落地</b><span>包含 Web 应用、工具脚本、设计练习与开源项目，按类型查看。</span></div>' +
+      '<div class="works-intro-count"><strong>' + all.length + '</strong><span>个项目</span></div>' +
+    '</div>' +
+    filters +
+    '<div class="section-head"><h2 class="section-title">' +
+      (active === 'all' ? '全部作品' : getWorkType(active).name) +
+      ' <span style="font-size:13px;font-weight:400;color:var(--text-3)">共 ' + filtered.length + ' 个</span></h2></div>' +
+    (filtered.length
+      ? '<div class="work-grid">' + filtered.map(workCard).join('') + '</div>'
+      : emptyHtml('这类作品还在酝酿中')) +
+  '</div>';
+}
+
+function renderWorkDetail(id) {
+  const w = WORKS.find((x) => x.id === id);
+  if (!w) return notFound();
+  const all = sortedWorks();
+  const idx = all.findIndex((x) => x.id === id);
+  const prev = idx > 0 ? all[idx - 1] : null;
+  const next = idx < all.length - 1 ? all[idx + 1] : null;
+  const t = getWorkType(w.type);
+  const body = w.content.replace(/(<pre><code>)([\s\S]*?)(<\/code><\/pre>)/g, (m, open, code, close) => open + highlightCode(code) + close);
+
+  return '<div class="page container layout-single">' +
+    '<div class="work-detail">' +
+      '<a class="section-more" href="#/works" style="font-size:12px">← 返回作品列表</a>' +
+      '<div class="work-hero" style="background:' + w.gradient + '">' +
+        '<div class="work-hero-icon">' + w.icon + '</div>' +
+        '<div class="work-hero-info">' +
+          '<span class="work-hero-type">' + icon(t.icon) + ' ' + t.name + '</span>' +
+          '<h1>' + escapeHtml(w.title) + '</h1>' +
+          '<p>' + escapeHtml(w.summary) + '</p>' +
+        '</div>' +
+        '<div class="work-hero-meta"><span>' + w.year + '</span><span>' + escapeHtml(w.status) + '</span></div>' +
+      '</div>' +
+      '<div class="work-detail-grid">' +
+        '<div>' +
+          '<div class="work-section-title">项目介绍</div>' +
+          '<article class="article-body work-body">' + body + '</article>' +
+        '</div>' +
+        '<aside class="work-side">' +
+          '<div class="widget">' +
+            '<h3 class="widget-title">项目亮点</h3>' +
+            '<ul class="work-features">' + w.features.map((f) => '<li>' + escapeHtml(f) + '</li>').join('') + '</ul>' +
+          '</div>' +
+          '<div class="widget">' +
+            '<h3 class="widget-title">技术 / 标签</h3>' +
+            '<div class="widget-tags">' + w.tags.map((tag) => '<span class="tag">' + escapeHtml(tag) + '</span>').join('') + '</div>' +
+          '</div>' +
+          ((w.link || w.repo) ? '<div class="widget">' +
+            '<h3 class="widget-title">相关链接</h3>' +
+            '<div class="work-links">' +
+              (w.link ? '<a class="btn btn-primary" href="' + w.link + '" target="_blank" rel="noopener">访问项目 ' + icon('external') + '</a>' : '') +
+              (w.repo ? '<a class="btn btn-ghost" href="' + w.repo + '" target="_blank" rel="noopener">查看源码 ' + icon('github') + '</a>' : '') +
+            '</div></div>' : '') +
+        '</aside>' +
+      '</div>' +
+      '<div class="post-nav">' +
+        (prev ? '<a href="#/works/' + prev.id + '"><small>← 上一个作品</small><b>' + escapeHtml(prev.title) + '</b></a>' : '<div></div>') +
+        (next ? '<a class="next" href="#/works/' + next.id + '"><small>下一个作品 →</small><b>' + escapeHtml(next.title) + '</b></a>' : '<div></div>') +
+      '</div>' +
+    '</div></div>';
+}
+
 function renderArchives() {
-  const list = sortedArticles();
+  const list = [
+    ...sortedArticles().map((a) => ({ ...a, itemType: 'article' })),
+    ...sortedDiaries().map((d) => ({ ...d, itemType: 'diary' })),
+  ].sort((a, b) => b.date.localeCompare(a.date));
   const byYear = {};
   list.forEach((a) => {
     const y = a.date.slice(0, 4);
@@ -204,12 +435,13 @@ function renderArchives() {
     '<div class="tl-year">' + year + ' <span style="font-size:12px;color:var(--text-3);font-weight:400">· ' + byYear[year].length + ' 篇</span></div>' +
     byYear[year].map((a) =>
       '<div class="tl-item"><time class="tl-date">' + a.date.slice(5).replace('-', '/') + '</time>' +
-      '<a class="tl-title" href="#/article/' + a.id + '">' + escapeHtml(a.title) + '</a></div>'
+      '<a class="tl-title" href="#/' + (a.itemType === 'diary' ? 'journal/' : 'article/') + a.id + '">' + escapeHtml(a.title) + '</a>' +
+      (a.itemType === 'diary' ? '<span class="tl-badge diary">日记</span>' : '') + '</div>'
     ).join('')
   ).join('');
 
   return '<div class="page container"><div class="page-head"><span class="page-eyebrow">Archives</span>' +
-    '<h1 class="page-title">文章归档</h1><p class="page-desc">共 ' + ARTICLES.length + ' 篇笔记，按时间倒序排列。</p></div>' +
+    '<h1 class="page-title">文章归档</h1><p class="page-desc">共 ' + ARTICLES.length + ' 篇笔记、' + DIARIES.length + ' 篇日记，按时间倒序排列。</p></div>' +
     '<div class="layout">' +
       '<div class="widget"><div class="timeline">' + timeline + '</div></div>' +
       sidebarHtml() +
@@ -219,7 +451,7 @@ function renderArchives() {
 function renderTags(query) {
   const selected = query.get('q');
   const counts = {};
-  ARTICLES.forEach((a) => a.tags.forEach((t) => { counts[t] = (counts[t] || 0) + 1; }));
+  [...ARTICLES, ...DIARIES].forEach((a) => a.tags.forEach((t) => { counts[t] = (counts[t] || 0) + 1; }));
   const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
   const cloud = '<div class="tag-cloud">' + entries.map(([t, n]) =>
     '<a href="#/tags?q=' + encodeURIComponent(t) + '" class="' + (selected === t ? 'active' : '') + '"' +
@@ -227,13 +459,18 @@ function renderTags(query) {
     '>' + icon('tag') + ' ' + escapeHtml(t) + ' <b>' + n + '</b></a>'
   ).join('') + '</div>';
 
-  const list = selected ? sortedArticles().filter((a) => a.tags.includes(selected)) : sortedArticles();
+  const articles = sortedArticles().map((a) => ({ ...a, itemType: 'article' }));
+  const diaries = sortedDiaries().map((d) => ({ ...d, itemType: 'diary' }));
+  const all = [...articles, ...diaries].sort((a, b) => b.date.localeCompare(a.date));
+  const list = selected ? all.filter((a) => a.tags.includes(selected)) : all;
+  const cardHtml = (item) => item.itemType === 'diary' ? diaryCard(item) : articleCard(item);
+
   return '<div class="page container layout-single">' +
     '<div class="page-head"><span class="page-eyebrow">Tags</span><h1 class="page-title">标签索引</h1>' +
-    '<p class="page-desc">共 ' + entries.length + ' 个标签。' + (selected ? '当前筛选：<strong style="color:var(--accent)">' + escapeHtml(selected) + '</strong> · <a href="#/tags" style="color:var(--accent)">清除筛选</a>' : '点击标签查看相关文章。') + '</p></div>' +
+    '<p class="page-desc">共 ' + entries.length + ' 个标签，涵盖笔记与日记。' + (selected ? '当前筛选：<strong style="color:var(--accent)">' + escapeHtml(selected) + '</strong> · <a href="#/tags" style="color:var(--accent)">清除筛选</a>' : '点击标签查看相关内容。') + '</p></div>' +
     cloud +
-    '<div class="section-head"><h2 class="section-title">' + (selected ? '「' + escapeHtml(selected) + '」相关文章' : '全部文章') + ' <span style="font-size:13px;font-weight:400;color:var(--text-3)">共 ' + list.length + ' 篇</span></h2></div>' +
-    '<div class="article-list">' + (list.length ? list.map(articleCard).join('') : emptyHtml('没有匹配的文章')) + '</div>' +
+    '<div class="section-head"><h2 class="section-title">' + (selected ? '「' + escapeHtml(selected) + '」相关内容' : '全部内容') + ' <span style="font-size:13px;font-weight:400;color:var(--text-3)">共 ' + list.length + ' 篇</span></h2></div>' +
+    '<div class="article-list">' + (list.length ? list.map(cardHtml).join('') : emptyHtml('没有匹配的内容')) + '</div>' +
   '</div>';
 }
 
@@ -243,8 +480,9 @@ function renderAbout() {
     '<div class="about-hero"><h2>你好，我是 ' + escapeHtml(SITE.author) + ' 👋</h2>' +
       '<p>' + escapeHtml(SITE.slogan) + ' 这个站点用来记录我在技术与工程实践中的所学、所思与所踩过的坑。</p></div>' +
     '<div class="about-card"><h3>关于这个站点</h3>' +
-      '<p>知栈是一个纯静态的个人知识库，基于 HTML / CSS / JavaScript 构建，托管在 GitHub Pages 上。没有任何构建步骤，内容全部存放在 <code style="color:var(--accent)">js/data.js</code> 中，便于随时增补与迁移。</p>' +
-      '<p>内容方向涵盖 Kubernetes、DevOps、Linux 性能、网络协议、数据库优化与编程技巧。每篇文章都尽量包含可复现的命令与明确的结论。</p></div>' +
+      '<p>麒麟是一个纯静态的个人知识库，基于 HTML / CSS / JavaScript 构建，托管在 GitHub Pages 上。没有任何构建步骤，内容全部存放在 <code style="color:var(--accent)">js/data.js</code> 中，便于随时增补与迁移。</p>' +
+      '<p>内容方向涵盖 Kubernetes、DevOps、Linux 性能、网络协议、数据库优化与编程技巧。每篇文章都尽量包含可复现的命令与明确的结论。</p>' +
+      '<p>除了知识笔记，站点还有 <a href="#/journal" style="color:var(--accent)">个人日记</a>（知识随笔与日常记录）和 <a href="#/works" style="color:var(--accent)">个人作品</a>（项目展示柜）两个栏目。技术、生活与作品，都值得被记下来。</p></div>' +
     '<div class="about-card"><h3>关注领域</h3><div class="skill-grid">' +
       CATEGORIES.map((c) => '<div class="skill-item"><b style="color:' + c.color + '">' + escapeHtml(c.name) + '</b><small>' + c.desc + '</small></div>').join('') +
     '</div></div>' +
@@ -327,14 +565,22 @@ function render() {
 
   if (path === '/') app.innerHTML = renderHome();
   else if (path === '/knowledge') app.innerHTML = renderKnowledge(query);
+  else if (path === '/journal') app.innerHTML = renderJournal(query);
+  else if (path === '/works') app.innerHTML = renderWorks(query);
   else if (path === '/archives') app.innerHTML = renderArchives();
   else if (path === '/tags') app.innerHTML = renderTags(query);
   else if (path === '/about') app.innerHTML = renderAbout();
   else if (path.startsWith('/article/')) app.innerHTML = renderArticle(path.split('/')[2]);
+  else if (path.startsWith('/journal/')) app.innerHTML = renderDiary(path.split('/')[2]);
+  else if (path.startsWith('/works/')) app.innerHTML = renderWorkDetail(path.split('/')[2]);
   else app.innerHTML = notFound();
 
-  const currentArticle = path.startsWith('/article/') ? ARTICLES.find((a) => a.id === path.split('/')[2]) : null;
-  document.title = (currentArticle ? currentArticle.title + ' · ' : '') + SITE.title;
+  const detailId = path.split('/')[2];
+  const currentArticle = path.startsWith('/article/') ? ARTICLES.find((a) => a.id === detailId) : null;
+  const currentDiary = path.startsWith('/journal/') ? DIARIES.find((d) => d.id === detailId) : null;
+  const currentWork = path.startsWith('/works/') ? WORKS.find((w) => w.id === detailId) : null;
+  const pageTitle = (currentArticle || currentDiary || currentWork)?.title;
+  document.title = (pageTitle ? pageTitle + ' · ' : '') + SITE.title;
 
   $$('.nav a').forEach((a) => {
     const r = a.dataset.route;
@@ -343,6 +589,7 @@ function render() {
 
   closeMenu();
   updateScroll();
+  paintVisits();
 }
 
 /* ---------- 搜索 ---------- */
@@ -378,8 +625,13 @@ function runSearch(q) {
     return;
   }
   searchHint.style.display = 'none';
-  const hits = sortedArticles().filter((a) =>
-    (a.title + ' ' + a.excerpt + ' ' + a.tags.join(' ') + ' ' + stripHtml(a.content)).toLowerCase().includes(q)
+  const all = [
+    ...sortedArticles().map((a) => ({ item: a, type: 'article' })),
+    ...sortedDiaries().map((d) => ({ item: d, type: 'diary' })),
+    ...sortedWorks().map((w) => ({ item: w, type: 'work' })),
+  ];
+  const hits = all.filter(({ item }) =>
+    (item.title + ' ' + (item.excerpt || item.summary || '') + ' ' + item.tags.join(' ') + ' ' + stripHtml(item.content)).toLowerCase().includes(q)
   ).slice(0, 8);
 
   resultItems = hits;
@@ -388,17 +640,22 @@ function runSearch(q) {
     searchResults.innerHTML = '<div class="search-empty">没有找到与「' + escapeHtml(q) + '」相关的内容</div>';
     return;
   }
-  searchResults.innerHTML = hits.map((a, i) => {
-    const c = getCat(a.category);
+  searchResults.innerHTML = hits.map(({ item, type }, i) => {
+    const meta = type === 'work'
+      ? { label: getWorkType(item.type).name + ' · 作品', color: getWorkType(item.type).color, ico: getWorkType(item.type).icon, desc: item.summary, date: item.year }
+      : type === 'diary'
+      ? { label: diaryKind(item.kind).name, color: diaryKind(item.kind).color, ico: diaryKind(item.kind).icon, desc: item.excerpt, date: item.date }
+      : { label: getCat(item.category).name, color: getCat(item.category).color, ico: getCat(item.category).icon, desc: item.excerpt, date: item.date };
     return '<div class="search-result' + (i === 0 ? ' selected' : '') + '" data-idx="' + i + '">' +
-      '<span class="sr-icon" style="background:' + c.color + '">' + icon(c.icon) + '</span>' +
-      '<div class="sr-body"><div class="sr-title">' + escapeHtml(a.title) + '</div>' +
-      '<div class="sr-desc">' + c.name + ' · ' + formatDate(a.date) + ' · ' + escapeHtml(a.excerpt.slice(0, 60)) + '...</div></div></div>';
+      '<span class="sr-icon" style="background:' + meta.color + '">' + icon(meta.ico) + '</span>' +
+      '<div class="sr-body"><div class="sr-title">' + escapeHtml(item.title) + '</div>' +
+      '<div class="sr-desc">' + meta.label + ' · ' + formatDate(meta.date) + ' · ' + escapeHtml(meta.desc.slice(0, 60)) + '...</div></div></div>';
   }).join('');
 
   $$('.search-result', searchResults).forEach((el) => {
     el.addEventListener('click', () => {
-      location.hash = '#/article/' + hits[+el.dataset.idx].id;
+      const hit = hits[+el.dataset.idx];
+      location.hash = '#/' + (hit.type === 'diary' ? 'journal/' : hit.type === 'work' ? 'works/' : 'article/') + hit.item.id;
       closeSearch();
     });
   });
@@ -409,6 +666,54 @@ function moveSelection(delta) {
   selectedResult = (selectedResult + delta + resultItems.length) % resultItems.length;
   $$('.search-result', searchResults).forEach((el, i) => el.classList.toggle('selected', i === selectedResult));
   $$('.search-result', searchResults)[selectedResult].scrollIntoView({ block: 'nearest' });
+}
+
+/* ---------- 访问统计 ---------- */
+let visitData = { today: 0, total: 0 };
+
+function paintVisits() {
+  $$('.visit-count[data-visit="today"]').forEach((el) => el.textContent = visitData.today.toLocaleString('zh-CN'));
+  $$('.visit-count[data-visit="total"]').forEach((el) => el.textContent = visitData.total.toLocaleString('zh-CN'));
+}
+
+function todayKey() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+async function initVisitStats() {
+  const today = todayKey();
+  const storageKey = 'qilin-visit-stats';
+
+  let local = {};
+  try { local = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (e) { local = {}; }
+  if (local.date !== today) { local.date = today; local.today = 0; }
+  local.today = (local.today || 0) + 1;
+  local.total = (local.total || 0) + 1;
+  try { localStorage.setItem(storageKey, JSON.stringify(local)); } catch (e) { /* 隐私模式下忽略 */ }
+  visitData = { today: local.today, total: local.total };
+  paintVisits();
+
+  const base = 'https://abacus.jasoncameron.dev';
+  const ns = encodeURIComponent(SITE.statsNamespace || 'qilin-site');
+  const hit = async (key) => {
+    const res = await fetch(base + '/hit/' + ns + '/' + encodeURIComponent(key), { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (typeof data.value !== 'number') throw new Error('Invalid response');
+    return data.value;
+  };
+
+  try {
+    const [total, todayCount] = await Promise.all([hit('total'), hit('day-' + today)]);
+    visitData = { today: todayCount, total };
+    paintVisits();
+    local.today = todayCount;
+    local.total = total;
+    try { localStorage.setItem(storageKey, JSON.stringify(local)); } catch (e) { /* 忽略 */ }
+  } catch (e) {
+    // 网络不可用时保留本地统计数字
+  }
 }
 
 /* ---------- 主题 ---------- */
@@ -474,9 +779,13 @@ function init() {
   document.addEventListener('click', (e) => {
     const target = e.target.closest('[data-action="search"]');
     if (target) { e.preventDefault(); openSearch(); }
-    if (e.target.closest('.filter-chip')) {
-      const cat = e.target.closest('.filter-chip').dataset.cat;
-      location.hash = '#/knowledge?cat=' + cat;
+    const chip = e.target.closest('.filter-chip');
+    if (chip && chip.dataset.dkind) {
+      location.hash = '#/journal?kind=' + chip.dataset.dkind;
+    } else if (chip && chip.dataset.wtype) {
+      location.hash = '#/works?type=' + chip.dataset.wtype;
+    } else if (chip && chip.dataset.cat) {
+      location.hash = '#/knowledge?cat=' + chip.dataset.cat;
     }
     const toc = e.target.closest('[data-toc]');
     if (toc) {
@@ -492,7 +801,8 @@ function init() {
     if (e.key === 'ArrowDown') { e.preventDefault(); moveSelection(1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); moveSelection(-1); }
     else if (e.key === 'Enter' && resultItems[selectedResult]) {
-      location.hash = '#/article/' + resultItems[selectedResult].id;
+      const hit = resultItems[selectedResult];
+      location.hash = '#/' + (hit.type === 'diary' ? 'journal/' : hit.type === 'work' ? 'works/' : 'article/') + hit.item.id;
       closeSearch();
     }
   });
@@ -506,6 +816,7 @@ function init() {
   window.addEventListener('scroll', updateScroll, { passive: true });
   window.addEventListener('hashchange', render);
   render();
+  initVisitStats();
 }
 
 init();

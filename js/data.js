@@ -6,15 +6,16 @@
  */
 
 const SITE = {
-  name: '知栈',
-  enName: 'Knowledge Stack',
-  title: '知栈 · 个人知识库',
+  name: '麒麟',
+  enName: 'Qilin',
+  title: '麒麟 · 个人知识库',
   description: '记录 · 整理 · 沉淀，让每一份技术积累都可被检索。',
-  avatarText: '知',
+  avatarText: '麒',
   slogan: '把踩过的坑写成路标，让知识可以被复用。',
-  author: '知栈君',
+  author: '麒麟君',
   email: 'hello@example.com',
   github: 'https://github.com/yourname',
+  statsNamespace: 'qilin-site',
   icp: '',
   founded: '2024',
 };
@@ -349,6 +350,277 @@ trap 'rm -rf "$TMPDIR"' EXIT</code></pre>
 \${VAR#pattern}    # 删除最短前缀匹配
 \${VAR%%pattern}   # 删除最长后缀匹配</code></pre>
       <blockquote>处理文件路径时优先使用 <code>--</code> 分隔选项与参数：<code>rm -- "$file"</code>，避免以 <code>-</code> 开头的文件名被误认为选项。</blockquote>
+    `,
+  },
+];
+
+/**
+ * 个人日记：kind 为 'knowledge'（知识随笔）或 'life'（日常记录）
+ * mood / weather 可自由修改 emoji 与文字
+ */
+const DIARIES = [
+  {
+    id: 'diary-github-pages',
+    title: '把博客搬到了 GitHub Pages',
+    date: '2026-11-24',
+    kind: 'knowledge',
+    mood: { icon: '😄', label: '开心' },
+    weather: { icon: '☀️', label: '晴' },
+    tags: ['建站', 'GitHub Pages', '随笔'],
+    excerpt: '折腾了一整天，终于把知识库迁到了静态托管。没有数据库、没有构建步骤，反而有种久违的清爽感。',
+    readTime: 4,
+    views: 86,
+    content: `
+      <p>今天做了一件"看起来没什么用但很爽"的事：把博客彻底重写成了一个纯静态站点。</p>
+      <p>之前的方案依赖 Hexo + 一堆插件，每次发文章都要等构建。现在的做法很简单——内容放在 <code>js/data.js</code>，页面用原生 JavaScript 渲染，推到 GitHub 就能访问。</p>
+      <h2 id="why">为什么折腾</h2>
+      <ul>
+        <li>不想再维护构建环境，换个电脑就能写文章才是对的</li>
+        <li>静态文件天然抗打，也不需要关心服务器安全更新</li>
+        <li>把内容和展现分开，以后换主题只需改 CSS</li>
+      </ul>
+      <h2 id="feeling">一点感受</h2>
+      <p>工具越简单，越能把注意力放回内容本身。晚上打开新站点，看着干净的排版，忽然觉得这一年记下来的东西终于有了个像样的家。</p>
+      <blockquote>技术选型不必追求复杂，能让你持续写下去的，就是好方案。</blockquote>
+    `,
+  },
+  {
+    id: 'diary-hiking-weekend',
+    title: '周末去爬山了，顺便想通了一件事',
+    date: '2026-11-21',
+    kind: 'life',
+    mood: { icon: '😌', label: '放松' },
+    weather: { icon: '⛅', label: '多云' },
+    tags: ['生活', '周末', '徒步'],
+    excerpt: '走了两个小时山路，没有信号，也没有消息提醒。很多纠结的事情，走着走着就不纠结了。',
+    readTime: 3,
+    views: 54,
+    content: `
+      <p>周六早上七点出门，山里比想象中冷。走到半山腰的时候手机彻底没了信号，一开始还有点不适应，后来反而安静了下来。</p>
+      <p>最近压在心里的一件事，是关于要不要接一个新项目。一路上没怎么刻意去想，但等站在山顶的时候，答案好像自己就浮出来了——<strong>先把手头的事做完，再决定要不要开始新的</strong>。</p>
+      <h2 id="small">路上的小确幸</h2>
+      <ul>
+        <li>山脚老大爷卖的烤红薯，五块钱一个，甜得过分</li>
+        <li>半山腰遇到一只很亲人的橘猫</li>
+        <li>云层散开的一瞬间，整片山谷都亮了</li>
+      </ul>
+      <p>下次争取带相机上山。下次也争取少想一点工作。</p>
+    `,
+  },
+  {
+    id: 'diary-deep-work',
+    title: '读《深度工作》的几点摘录与思考',
+    date: '2026-11-16',
+    kind: 'knowledge',
+    mood: { icon: '🤔', label: '思考' },
+    weather: { icon: '🌧️', label: '小雨' },
+    tags: ['读书', '效率', '思考'],
+    excerpt: '注意力是这个时代最稀缺的资源。书里关于"刻意练习"和"注意力残留"的讨论，对写代码的我们尤其适用。',
+    readTime: 6,
+    views: 132,
+    content: `
+      <p>下雨天适合读书。花了一个下午翻完《深度工作》，有几处特别想记下来。</p>
+      <h2 id="residue">注意力残留</h2>
+      <p>书中提到：当你从任务 A 切换到任务 B，注意力并不会立刻转移，一部分还留在 A 上。这解释了为什么在消息不断的环境中写代码，效率会断崖式下降。</p>
+      <blockquote>频繁切换上下文的代价，远比你以为的高。</blockquote>
+      <h2 id="practice">深度工作的仪式感</h2>
+      <p>作者建议为深度工作建立固定仪式：固定的时间、地点、规则。我自己的版本是——早上到工位先戴耳机，手机反扣，前 90 分钟只看一个文件。</p>
+      <h2 id="thinking">一点反思</h2>
+      <p>以前总觉得"忙"等于"有价值"，现在更愿意用"今天有没有完成一件需要动脑的事"来衡量一天。忙碌很容易，专注很难。</p>
+    `,
+  },
+  {
+    id: 'diary-100-days',
+    title: '记录的第 100 天',
+    date: '2026-11-10',
+    kind: 'life',
+    mood: { icon: '🥳', label: '满足' },
+    weather: { icon: '☀️', label: '晴' },
+    tags: ['生活', '记录', '复盘'],
+    excerpt: '没有想象中的仪式感，只是像往常一样打开编辑器写了几行。但回头翻的时候，才发现日子真的留下了痕迹。',
+    readTime: 3,
+    views: 71,
+    content: `
+      <p>今天翻了下记录，发现已经断断续续写了一百天。说"坚持"其实有点夸张，中间有好几次差点放弃，最后都是因为"不写好像也少了点什么"又坐了下来。</p>
+      <h2 id="change">有什么变化</h2>
+      <ul>
+        <li>遇到的问题不再只存在脑子里，写下来之后理解得更透</li>
+        <li>开始留意日常里细小的快乐，而不是只盯着待办清单</li>
+        <li>偶尔翻旧文章，会惊讶于自己曾经不知道某些事</li>
+      </ul>
+      <p>写下来的东西不一定有价值，但<strong>写下来的过程</strong>几乎总是有价值。</p>
+      <p>第 101 天，继续。</p>
+    `,
+  },
+  {
+    id: 'diary-incident-reflection',
+    title: '一次线上故障后的反思',
+    date: '2026-11-05',
+    kind: 'knowledge',
+    mood: { icon: '😮‍💨', label: '疲惫' },
+    weather: { icon: '🌤️', label: '多云转晴' },
+    tags: ['复盘', '故障排查', '思考'],
+    excerpt: '三个小时的故障，根因是一行配置。技术上的问题很快修好了，但流程上的问题值得多想一会儿。',
+    readTime: 5,
+    views: 118,
+    content: `
+      <p>昨晚的故障持续了三个小时。最终定位到是一个配置项写错了环境，导致服务启动后连错了数据库。</p>
+      <h2 id="fixed">技术层面</h2>
+      <p>修复只用了五分钟，但定位花了两个多小时：日志没有明确报错、监控指标滞后、告警规则太粗。这三件事叠在一起，让最简单的原因藏得最深。</p>
+      <h2 id="process">流程层面</h2>
+      <ul>
+        <li>配置应该集中管理，而不是散落在每个环境的文件里</li>
+        <li>发布前应该有一份最短检查清单，哪怕只有三条</li>
+        <li>复盘要针对流程，而不是针对人</li>
+      </ul>
+      <blockquote>故障不是某个人犯的错，是系统允许了这个错误发生。</blockquote>
+      <p>睡了一觉，今天把检查清单补上了。希望下次不用再写类似的日记。</p>
+    `,
+  },
+  {
+    id: 'diary-osmanthus',
+    title: '楼下的桂花开了',
+    date: '2026-10-28',
+    kind: 'life',
+    mood: { icon: '😊', label: '愉快' },
+    weather: { icon: '🌤️', label: '晴' },
+    tags: ['生活', '日常', '随感'],
+    excerpt: '下班走到小区门口突然闻到一股香味，抬头才发现是桂花。秋天好像总是在不经意的瞬间才被意识到。',
+    readTime: 2,
+    views: 43,
+    content: `
+      <p>下班走到小区门口，突然闻到很浓的香味。抬头找了半天，才发现角落里那棵不起眼的树已经开了。</p>
+      <p>今年好像过得特别快。春天和夏天几乎没什么印象，反倒是这几天的凉风和桂花香，让人一下子感觉到季节真的换了。</p>
+      <p>想起小时候院子里也有一棵桂花树，每到这个季节，奶奶会拿报纸铺在树下接住落下来的小花。那些细节平时根本想不起来，闻到味道的时候却全回来了。</p>
+      <p>买了一个桂花糕，边走边吃。挺好的一天。</p>
+    `,
+  },
+];
+
+/** 个人作品类型 */
+const WORK_TYPES = [
+  { id: 'web', name: 'Web 应用', icon: 'globe', color: '#4f6ef7', desc: '网站、面板与前端项目' },
+  { id: 'tool', name: '工具脚本', icon: 'wrench', color: '#10b981', desc: '提升效率的命令行工具' },
+  { id: 'design', name: '设计作品', icon: 'palette', color: '#ec4899', desc: '视觉与交互设计尝试' },
+  { id: 'open', name: '开源项目', icon: 'github', color: '#8b5cf6', desc: '开放源代码的长期项目' },
+];
+
+/**
+ * 个人作品：icon 可用任意 emoji，gradient 为封面渐变色
+ */
+const WORKS = [
+  {
+    id: 'qilin-knowledge-site',
+    title: '麒麟个人知识库',
+    type: 'web',
+    year: '2026',
+    status: '持续维护',
+    icon: '📚',
+    gradient: 'linear-gradient(135deg, #4f6ef7, #00b4d8)',
+    summary: '一个零依赖、纯静态的个人知识网站，集成知识库、日记与作品集，直接托管在 GitHub Pages。',
+    tags: ['HTML', 'CSS', 'JavaScript', 'GitHub Pages'],
+    features: ['无需构建步骤，推送即上线', '亮色 / 暗色双主题', '文章、日记、作品统一管理'],
+    link: 'https://github.com/yourname',
+    repo: 'https://github.com/yourname/yourname.github.io',
+    content: `
+      <p>这是你正在浏览的站点。它最初只是存放技术笔记的地方，后来陆续加入了个人日记和作品集，慢慢变成了一个完整的个人知识空间。</p>
+      <h2 id="goal">设计目标</h2>
+      <ul>
+        <li><strong>零依赖</strong>：不引入框架和构建工具，任何文本编辑器都能改内容</li>
+        <li><strong>易迁移</strong>：所有数据集中在 <code>js/data.js</code>，换个域名也能直接跑</li>
+        <li><strong>可长期维护</strong>：内容与样式分离，未来换主题只需改 CSS</li>
+      </ul>
+      <h2 id="stack">实现</h2>
+      <p>页面由原生 JavaScript 的哈希路由驱动，搜索、主题切换、目录跳转都是几十行代码的小功能。托管在 GitHub Pages 上，没有服务器成本。</p>
+    `,
+  },
+  {
+    id: 'k8s-doctor',
+    title: 'K8s 排障助手',
+    type: 'tool',
+    year: '2026',
+    status: '已完成',
+    icon: '🩺',
+    gradient: 'linear-gradient(135deg, #326ce5, #22d3ee)',
+    summary: '把日常 Kubernetes 排障流程固化成交互式命令行工具，输入症状即可给出检查清单与常用命令。',
+    tags: ['Go', 'Kubernetes', 'CLI'],
+    features: ['内置 20+ 常见故障场景', '自动生成排查命令', '支持导出 Markdown 报告'],
+    link: '',
+    repo: 'https://github.com/yourname/k8s-doctor',
+    content: `
+      <p>写这个工具的起因很简单：同样的问题隔几个月又会忘一次，重复查文档很浪费时间。于是把排查思路写成了可执行的清单。</p>
+      <h2 id="how">怎么用</h2>
+      <pre><code>k8s-doctor diagnose --symptom crashloop
+k8s-doctor diagnose --symptom dns-failure --namespace prod</code></pre>
+      <p>工具会根据症状输出分步骤的检查命令，并标注每一步预期看到的结果，新手也能顺着走完整个排查流程。</p>
+      <blockquote>工具的价值不在于多智能，而在于让正确的方法被稳定复用。</blockquote>
+    `,
+  },
+  {
+    id: 'ops-dashboard',
+    title: '轻量运维监控面板',
+    type: 'web',
+    year: '2025',
+    status: '已完成',
+    icon: '📊',
+    gradient: 'linear-gradient(135deg, #f59e0b, #ef4444)',
+    summary: '为小团队设计的单页监控面板，聚合主机指标、服务健康状态与告警历史，部署只需一个静态文件。',
+    tags: ['Vue', 'ECharts', 'Prometheus'],
+    features: ['单文件部署，无需后端', '告警按严重程度分层展示', '移动端适配'],
+    link: 'https://example.com/dashboard',
+    repo: '',
+    content: `
+      <p>团队规模不大时，引入完整的监控平台反而增加维护负担。这个项目想解决的问题是：<strong>用最轻的方式，让所有人一眼看到系统状态</strong>。</p>
+      <h2 id="features">功能</h2>
+      <ul>
+        <li>主机 CPU、内存、磁盘的核心指标趋势</li>
+        <li>服务健康探针结果汇总</li>
+        <li>最近 24 小时的告警时间线</li>
+      </ul>
+      <p>数据源来自 Prometheus 的 HTTP API，前端定时拉取并缓存，避免频繁查询。</p>
+    `,
+  },
+  {
+    id: 'alert-rule-builder',
+    title: '告警规则生成器',
+    type: 'open',
+    year: '2025',
+    status: '持续维护',
+    icon: '🔔',
+    gradient: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+    summary: '通过表单配置生成规范的 Prometheus 告警规则 YAML，内置 SLO 燃烧率等常见模板。',
+    tags: ['Prometheus', 'YAML', '开源'],
+    features: ['可视化配置告警表达式', '内置多条 SRE 最佳实践模板', '规则校验与语法检查'],
+    link: '',
+    repo: 'https://github.com/yourname/alert-rule-builder',
+    content: `
+      <p>手写 Prometheus 规则时，重复劳动和格式错误占了大部分时间。这个项目把常见规则抽象成表单，填完直接导出可用的 YAML。</p>
+      <h2 id="template">内置模板</h2>
+      <ul>
+        <li>错误率超过阈值</li>
+        <li>P99 延迟劣化</li>
+        <li>SLO 错误预算燃烧过快</li>
+      </ul>
+      <p>所有模板都带有 <code>for</code> 字段与 Runbook 链接占位，鼓励写可行动的告警。</p>
+    `,
+  },
+  {
+    id: 'daily-ui-experiments',
+    title: '日常界面练习集',
+    type: 'design',
+    year: '2024',
+    status: '进行中',
+    icon: '🎨',
+    gradient: 'linear-gradient(135deg, #f472b6, #a855f7)',
+    summary: '收集日常看到的优秀界面，用自己的方式重新实现，记录配色、排版与交互细节。',
+    tags: ['UI', 'CSS', '设计'],
+    features: ['每周一个小练习', '记录设计决策过程', '全部为纯 CSS 实现'],
+    link: '',
+    repo: '',
+    content: `
+      <p>这是一个没有明确终点的练习项目。看到一个喜欢的界面，就试着把它实现出来，然后写下"为什么这样设计会更好用"。</p>
+      <h2 id="gain">收获</h2>
+      <p>以前觉得设计是审美问题，做多了才发现大部分设计其实是<strong>信息组织问题</strong>：什么先出现、什么被强调、什么被隐藏，都有其原因。</p>
     `,
   },
 ];
