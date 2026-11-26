@@ -33,9 +33,122 @@ const CATEGORIES = [
   { id: 'network', name: '网络', en: 'Network', icon: 'network', color: '#8b5cf6', desc: '协议原理、网络诊断与调优' },
   { id: 'database', name: '数据库', en: 'Database', icon: 'database', color: '#ef4444', desc: '索引设计、查询优化与架构实践' },
   { id: 'programming', name: '编程', en: 'Code', icon: 'code', color: '#06b6d4', desc: '脚本技巧、设计模式与开发随笔' },
+  { id: 'ascend', name: '昇腾/NPU', en: 'Ascend', icon: 'hexagon', color: '#c1272d', desc: 'Ascend NPU 部署、掉卡与 DVPP/固件排查' },
 ];
 
 const ARTICLES = [
+  {
+    id: 'ascend-310p-npu-drop-rootcause',
+    title: '一次昇腾 310P 掉卡的根因排查：从 DVPP 异常到 OS panic',
+    date: '2026-11-26',
+    updated: '2026-11-26',
+    category: 'ascend',
+    tags: ['昇腾', '310P', 'NPU', '掉卡', '故障分析'],
+    excerpt: '一台装了 8 张 Ascend 310P3 的 node01，npu-smi 里的卡越掉越少最后只剩 5 张，但 lspci 始终能看到 8 张。顺着 BBOX 日志把证据链梳理清楚：掉的是哪几张、为什么掉、以及逐条排除 PCIe/温度/显存。',
+    readTime: 12,
+    views: 0,
+    featured: true,
+    content: `
+      <blockquote>一台装了 8 张 Ascend 310P3 的 node01，跑着跑着 <code>npu-smi</code> 里的卡越来越少，最后只剩 5 张。但 <code>lspci</code> 始终能看到 8 张设备。本文把这次掉卡的完整证据链梳理一遍：掉的到底是哪几张卡、为什么掉、以及排除了哪些常见猜测。</blockquote>
+      <h2 id="conclusion">一、一句话结论</h2>
+      <p>掉的 3 张卡是 <strong>NPU 1 / 2 / 3</strong>（物理 ID 0 / 2 / 4，PCIe <code>01:00.0 / 02:00.0 / 04:00.0</code>），正是基线时唯一运行 <code>ev_smc</code> 视频解码（流媒体）进程的那三张卡。</p>
+      <p>直接原因是设备侧（Device OS）连续发生 <strong>DVPP 解码异常（0xA2145004）</strong> 后触发 <strong>AP OS panic（0xa8040001）</strong>，设备停止响应 PCIe 消息与心跳，宿主驱动将其标记为 <code>heartbeat lost</code> 并从 <code>npu-smi</code> 视图中移除。</p>
+      <p>它<strong>不是</strong> PCIe 链路断开或硬件拔卡（lspci 始终 8 张、AER=0、BBOX 复位计数未变），<strong>不是</strong>温度过高，<strong>也不是</strong>显存耗尽。</p>
+      <h2 id="evidence-level">二、证据分级说明</h2>
+      <p>这份报告里每条判断都按证据强度做了标注，推断的部分不会被当成结论来写：<strong>已证实</strong>有日志原文直接支撑（含时间戳、错误码、设备号）；<strong>推断</strong>由多份日志时序关联得出，方向明确但缺唯一性证明；<strong>已排除</strong>日志中有反向证据可明确否定。</p>
+      <p>分析对象是 node01 上的 Ascend 310P3 × 8，日志采集窗口为 2026-11-23 16:51 ～ 2026-11-24 09:42（+0800），证据来自 <code>ascend_watch_node01_20261123_165142logs</code> 内的 baseline / events / npu_smi_trace / dmesg_inc / metrics / msnpureport（BBOX）。</p>
+      <h2 id="locate">三、现象与卡号定位</h2>
+      <h3>掉了几张、掉了哪几张（已证实）</h3>
+      <p><code>npu_smi_trace.log</code> 每 10 秒记录一次实际可见的 NPU 编号集合，变化如下：</p>
+      <table>
+        <thead><tr><th>时间（+0800）</th><th>可见 NPU</th><th>消失的卡</th><th>物理设备 / PCIe</th></tr></thead>
+        <tbody>
+          <tr><td>16:52:09（基线）</td><td>1,2,3,4,5,6,7,8</td><td>—</td><td>—</td></tr>
+          <tr><td>17:59:37</td><td>1,2,4,5,6,7,8</td><td>NPU 3</td><td>phy 4 / 04:00.0</td></tr>
+          <tr><td>18:21:32</td><td>2,4,5,6,7,8</td><td>NPU 1</td><td>phy 0 / 01:00.0</td></tr>
+          <tr><td>01-24 01:44:51</td><td>4,5,6,7,8</td><td>NPU 2</td><td>phy 2 / 02:00.0</td></tr>
+          <tr><td>01-24 09:42（结束）</td><td>4,5,6,7,8</td><td>—</td><td>未恢复</td></tr>
+        </tbody>
+      </table>
+      <p>映射依据来自基线表体：<code>NPU 1 → Device 0 / 01:00.0</code>、<code>NPU 2 → Device 1 / 02:00.0</code>、<code>NPU 3 → Device 2 / 04:00.0</code>。现场截图也完全吻合：只剩 NPU 4/5/6/7/8，温度 47~52℃，显存 2.5~2.9 GB，且 No running processes found。</p>
+      <h3>掉的三张恰好就是流媒体卡（已证实）</h3>
+      <p>基线（16:52:09）<code>npu-smi</code> 的进程表里，<strong>只有 NPU 1/2/3</strong> 有进程：</p>
+      <pre><code>| 1  0 | 4089924 | ev_smc | 273 MB |
+| 2  0 | 4089924 | ev_smc | 310 MB |
+| 3  0 | 4089924 | ev_smc | 274 MB |
+NPU 4/5/6/7/8: No running processes found</code></pre>
+      <p>设备侧 <code>bbox/dvpp.txt</code> 显示这三张卡上有 32 路以上的 H265/H264 解码通道（VDEC，pid 6336/1993），与"分配给流媒体"的业务形态一致。<strong>掉的卡就是跑流媒体解码的卡，不是随机三张。</strong></p>
+      <h3>一处会误导人的监控提示（已证实）</h3>
+      <p><code>collector.log</code> 写的是"npu-smi 卡数下降 8→0"，但同一时刻 <code>event_desc.txt</code> 记录的是"当前 npu-smi 卡数：7"，trace 表体也确实列出了 7 张卡。<code>npu=0</code> 是脚本计数逻辑的 bug（表头计数与表体不符），<strong>不代表当时真的 0 张卡</strong>。排查时请以表体为准：17:59:37 是 8→7，而不是 8→0。</p>
+      <h2 id="rootchain">四、根因链条（按时间顺序逐步给证据）</h2>
+      <p>整条链路是：<strong>① DVPP 解码异常（0xA2145004，每约 10s 一次）→ ② TS/aicpu 异常（0xb406000d）→ ③ 设备 OS panic（0xa8040001，module ap）→ ④ 设备失联（heartbeat lost）→ ⑤ 从 npu-smi 消失、业务中断</strong>。</p>
+      <h3>步骤①：设备侧 DVPP 先持续报错（已证实）</h3>
+      <p>各卡 BBOX <code>bbox_info.txt</code> 中的系统异常记录（时间为 UTC，+8 小时为本地时间）：</p>
+      <table>
+        <thead><tr><th>设备（NPU）</th><th>DVPP 异常时段 UTC</th><th>次数</th><th>随后 OS panic（本地）</th></tr></thead>
+        <tbody>
+          <tr><td>device-4（NPU 3）</td><td>09:56:20 ~ 09:59:04</td><td>49</td><td>17:59:05</td></tr>
+          <tr><td>device-0（NPU 1）</td><td>09:59:35 ~ 10:05:47</td><td>46</td><td>18:05:48</td></tr>
+          <tr><td>device-2（NPU 2）</td><td>16:27:02 ~ 16:28:24</td><td>49</td><td>次日 00:28:25</td></tr>
+        </tbody>
+      </table>
+      <pre><code>system exception code[0xA2145004]: Device[0], ModuleName[DVPP],
+ExceptionReason[DVPP_EXCEPTION], TimeStamp [20261123095620-718910].
+...（每约 10 秒一条，持续 2.5~6.5 分钟）
+system exception code[0xA8040001]: Device[0], ModuleName[AP],
+ExceptionReason[OS_PANIC], TimeStamp [20261123095905-599547].</code></pre>
+      <p>设备内核日志（<code>kbox.txt</code> / <code>dev-os-2/messages</code>）同步出现解码错误风暴：</p>
+      <pre><code>[HiDvpp][Vdec] hevc_ref_pic_process: ref frame(poc 65) lost.
+[HiDvpp][Vdec] hevc_create_lost_picture: DPB no suited fs for lost pic.
+[HiDvpp][Vdec] vdec_error_release_out_buffer_common:
+   Error input stream error: pid 6336 usr chn 31 ... can't decode, report to user</code></pre>
+      <p><strong>推断：</strong>流媒体解码通道持续输入异常码流（缺参考帧、DPB 无可用帧），DVPP 驱动在异常路径上反复报错，最终演变为设备侧致命异常。日志能证明"DVPP 异常在先、OS panic 在后、同一张卡"，但<strong>不能证明</strong>具体是哪一路码流、哪个应用调用最先触发。</p>
+      <h3>步骤②：TS / aicpu 异常（已证实）</h3>
+      <pre><code>[tsdrv] receive ts exception msg, excep_code=0xb406000d, devid=0 tsid=0
+[bbox] from_module: [ts]   desc: [ts aicpu exception]</code></pre>
+      <p>宿主侧同步重演：17:59:10 起 <code>drv_pcie</code> 报 <code>Device irq not resp (dev_id=4, ret=-38)</code>；17:59:13 起 <code>tsdrv</code> 报 <code>Wait logic cq timeout=5000, err=-110</code>；17:59:33 报 <code>ts is down, devid(4)</code>（共 25 条，均针对 devid=4）。</p>
+      <h3>步骤③：设备 OS panic —— 掉卡的直接原因（已证实）</h3>
+      <pre><code>excepid  0xa8040001
+module   ap        core  0x2      eType  0x24
+desc     os panic
+date     20261123095905-599547 UTC   # = 17:59:05 +0800</code></pre>
+      <p>三张故障卡的 BBOX 都是 <code>desc=os panic / 0xa8040001 / module=ap / core=2</code>；五张健康卡（device-6/8/10/12/14）的 <code>excepid=0x0</code>、desc 为空、DVPP 异常数为 0。这是"设备端操作系统崩溃导致卡不可用"的直接证据，而非宿主驱动自己崩溃。</p>
+      <h3>步骤④：设备失联，被标记 heartbeat lost（已证实）</h3>
+      <pre><code>09:59:32 Heartbeat lost! (device=4; lost_count=4)
+10:06:14 Heartbeat lost! (device=0; ...)
+00:28:49 Heartbeat lost! (device=2; ...)</code></pre>
+      <p><code>device_info.txt</code> 的状态从基线 <code>os running</code> 依次变为 <code>heartbeat lost</code>，顺序与三张卡 panic 的时间完全对应：device-4 → device-0 → device-2。</p>
+      <h3>步骤⑤：npu-smi 移除，业务进程消失（已证实）</h3>
+      <p>设备失联后，宿主驱动对设备的调用持续失败，形成日志里数量最多的一批错误（这些是<strong>结果</strong>，不是根因）：<code>devdrv_get_core_inuse failed ret(-6)</code>（1648 条）、<code>device(4) is not working</code>（1210 条，来自 device-plugin / npu-exporter）、<code>Dma copy fail ret=-22</code>（670 条，来自 ev_smc）。这一点在排查时尤其要分清楚：日志量最大的错误往往是结果而不是原因。</p>
+      <h2 id="exclude">五、逐条排除其他可能</h2>
+      <table>
+        <thead><tr><th>猜测</th><th>结论</th><th>证据</th></tr></thead>
+        <tbody>
+          <tr><td>PCIe 链路断开 / 硬件拔卡</td><td>已排除</td><td>lspci 三次快照均 8 张 d500，count=44 不变；AER 全程为 0；截图也仍见 8 张。</td></tr>
+          <tr><td>卡被复位 / 热重启</td><td>已排除</td><td>所有设备 BBOX reset count=0x15，基线与事件后一致；无 reset 内核日志。</td></tr>
+          <tr><td>温度过高</td><td>已排除</td><td>故障卡 panic 前 57~66℃；未故障的 NPU7 基线达 84℃ 却始终正常。无相关性。</td></tr>
+          <tr><td>显存 / 大页耗尽</td><td>已排除</td><td>显存在 1715 至 6226 MB 波动，无单调上涨、无 OOM。故障后剩卡仍占用 2.5~2.9 GB 且正常。</td></tr>
+          <tr><td>宿主驱动 / 内核崩溃</td><td>已排除</td><td>无 kernel panic / OOM / watchdog；panic 记录在设备侧 BBOX（module=ap, core=2）。</td></tr>
+          <tr><td>单卡偶发硬件故障</td><td>不支持</td><td>三卡先后出现完全相同的异常码组合，且都是流媒体解码卡，更指向共同的业务/软件路径。</td></tr>
+        </tbody>
+      </table>
+      <h2 id="unknown">六、尚不能证明的部分（如实说明）</h2>
+      <ul>
+        <li><strong>触发 DVPP 异常的原始输入</strong>：日志能证明参考帧丢失/DPB 无可用帧/输入流错误，但采集的是故障后快照，无法定位到具体 stream/channel/URL。</li>
+        <li><strong>是 DVPP 异常直接导致 panic，还是两者同源于更底层固件缺陷</strong>：BBOX os panic 记录没有可读的函数级调用栈（dvpp.txt 中 706 处 pK-error 表明指针转储本身也失败），只能确认时序与同卡相关性。</li>
+        <li><strong>为何三卡相隔 6 分钟 / 6.5 小时依次发生</strong>：缺少应用侧负载/码流切换日志，无法判断是同一外部事件还是各自独立劣化。</li>
+      </ul>
+      <h2 id="suggestion">七、结论与建议</h2>
+      <p><strong>结论：</strong>"掉卡"的本质是设备侧 OS panic 后心跳丢失，卡片仍在 PCIe 总线上、未复位、未拔除，所以 lspci 看到 8 张而 npu-smi 只剩 5 张；受影响的恰好是跑 ev_smc 流媒体解码的 NPU 1/2/3。</p>
+      <p><strong>建议（按优先级）：</strong></p>
+      <ol>
+        <li><strong>先恢复业务</strong>：对 phy 0/2/4 三张卡执行复位或整机重启（BBOX 复位计数未变，说明从未真正复位过），恢复后确认 npu-smi 可见且 device_info 为 os running。</li>
+        <li><strong>降低触发面</strong>：确认根因前先降低这三卡的解码通道数/码率，或把流媒体切到健康的 NPU 4~8 灰度观察，避免在异常卡上重试刷屏。</li>
+        <li><strong>抓第一现场</strong>：流媒体应用侧开启通道级日志（码流来源、分辨率、POC、错误回调），设备侧持续导出 msnpureport。</li>
+        <li><strong>升级支持</strong>：把 3 个异常码（0xA2145004 / 0xa8040001 / 0xb406000d）加 bbox/kbox/dvpp/ts 快照提交华为技术支持，确认对应关系及是否存在已知固件/驱动缺陷。</li>
+      </ol>
+    `,
+  },
   {
     id: 'k8s-coredns-fqdn',
     title: 'Kubernetes CoreDNS 排查：search 域导致 FQDN 解析失败',

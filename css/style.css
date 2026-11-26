@@ -800,3 +800,10 @@ svg { width: 1em; height: 1em; display: block; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* ---------- 文章表格（2026-11-26 新增，适配明暗主题） ---------- */
+.article-body table { width: 100%; border-collapse: collapse; margin: 0 0 18px; font-size: 13.5px; }
+.article-body thead th { background: var(--surface-2); font-weight: 650; }
+.article-body th, .article-body td { border: 1px solid var(--border); padding: 8px 11px; text-align: left; vertical-align: top; line-height: 1.6; }
+.article-body tbody tr:hover { background: var(--surface-2); }
+.article-body .table-wrap { overflow-x: auto; }
